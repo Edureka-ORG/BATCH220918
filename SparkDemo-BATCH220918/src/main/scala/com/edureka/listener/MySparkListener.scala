@@ -24,20 +24,29 @@ import org.apache.spark.SparkContext
 import org.apache.kafka.clients.producer.KafkaProducer
 import com.edureka.producer.ProducerUtil
 
+ import org.json4s.JsonDSL._
+import org.json4s.jackson.JsonMethods._
+
 class MySparkListener extends SparkListener {
 
   var producer: KafkaProducer[String, String] = null;
   
-  val topic = "FLUME-BATCH220918-TOPIC";
+  val topic = "FLUME-BATCH220918-TOPIC-1";
   
   private def publishEventInternal(event: SparkListenerEvent) 
   {
     var appId = SparkContext.getOrCreate().applicationId
     val eventJson = JsonProtocolWrapper.sparkEventToJson(event);
     
+    val completeJson = 
+      ("timestamp" -> System.currentTimeMillis()) ~
+      ("application-id" -> appId) ~
+      ("spark-event" -> eventJson)
+      
+    val publishJson = compact(render(completeJson));  
     producer = ProducerUtil.getProducer();
     
-    ProducerUtil.send(producer, topic, appId,eventJson.toString());
+    ProducerUtil.send(producer, topic, appId,publishJson.toString());
     
 
   }
