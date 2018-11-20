@@ -13,8 +13,11 @@ object ProducerUtil {
       "acks" -> "all",
       "batch.size" -> 16384,
       "buffer.memory" -> 33554432,
+      "group.id" -> "use_a_separate_group_id_for_each_stream",
       "key.serializer" -> "org.apache.kafka.common.serialization.StringSerializer",
-      "value.serializer" -> "org.apache.kafka.common.serialization.StringSerializer")
+      "value.serializer" -> "org.apache.kafka.common.serialization.StringSerializer",
+      "auto.offset.reset" -> "earliest",
+      "enable.auto.commit" -> (false: java.lang.Boolean))
   
   
   def extractOptions(properties: Map[String, Any]): Properties = {
